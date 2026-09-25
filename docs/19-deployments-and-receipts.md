@@ -174,7 +174,7 @@ appendix B. The output leaves are the `leafIndex` of the two `NoteCommitted` eve
 | 43 | `0xbed088f0b842c8416a269d37bfb7342649d91a4260e1d6b73a7b3a51383ad04f` | 11,775,650 | 7,086,413 | 169, 170 | relayer `0xB6eB…8A6F` |
 
 Rows 1 to 42 are sent by `0xc973CaD63834CFf7ab426F18C11D113C3898031c`. Row 43 is sent by
-`0xB6eB6AEfAD95152C0D4F5ff4552915cB27548A6F`, the automatic relayer. Row 42 is the settlement split
+`0xB6eB6aeFad95152C0d4f5fF4552915CB27548A6F`, the automatic relayer. Row 42 is the settlement split
 in [12-gas.md](12-gas.md#where-the-gas-of-one-settlement-goes). An `eth_call` of `verifyBatch` on
 the adapter, with the proof and words from the calldata of each row, returns true for all 43.
 

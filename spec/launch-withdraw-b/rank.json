@@ -1,0 +1,17 @@
+{
+  "artifact": "zk-fri-rank",
+  "transcript": "spec/launch-withdraw-b/transcript-kat.json",
+  "queries": 19,
+  "fri_revealed": 1632,
+  "layer0": 152,
+  "mask_openings": 308,
+  "rank_mask_openings": 308,
+  "rank_simulator": 1328,
+  "rank_mask": 1328,
+  "samples": [
+    1696,
+    2004
+  ],
+  "mask_log": 17,
+  "pass": true
+}

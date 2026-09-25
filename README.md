@@ -15,7 +15,8 @@ No trusted setup · No pairing curves · No SNARK wrapper · Zero-knowledge proo
 > [!WARNING]
 > **Testnet, before any external audit.** The launch pool runs on Sepolia and holds no real value.
 > 43 private transfers have settled on it, one transaction each, and the live verifier still
-> accepts all 43. The proofs are zero-knowledge. The Merkle digests are 24 bytes, the anonymity
+> accepts all 43. Every launch proof passes the zero-knowledge rank check, 1328 = 1328 in
+> `spec/launch-*/rank.json`. The Merkle digests are 24 bytes, the anonymity
 > set is small, and a batch carries one intent. Nothing is deployed on mainnet. Read
 > [docs/20-security-status.md](docs/20-security-status.md) first.
 

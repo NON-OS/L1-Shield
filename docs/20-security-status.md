@@ -174,6 +174,7 @@ The code rounds `JOHNSON_LOSS`, `LOG_K` and `COMMIT_CONST` so that each figure e
 | hiding is a property of the prover. The verifier checks soundness only | outside | the prover and its masks are outside this repository |
 | the trace carries a mask pair in columns 42 and 43, filled from a keyed hash of device randomness | outside | computational zero knowledge: hiding rests on that hash and on the randomness of the device |
 | a rank check on the masks runs on the device before a proof leaves it | outside | prover code, outside this repository |
+| the rank condition (R) holds on each of the four launch proofs: rank 1,328 on both sides. A mask of $2^8$ coefficients fails it, with rank 52 | measured | `spec/launch-*/rank.json`, `spec/launch-honest/rank-control-mask8.json`, written by `zk_fri_rank` of the prover repository from each `transcript-kat.json` |
 | the chain accepts only proofs that open the mask pair as one value | enforced | `MaskSlotNotZero` (`RealQueryVerify.sol:429`) |
 | the probability over the challenges that the rank condition fails is at most $1328 \cdot 102 / p \approx 2^{-46.95}$, for each position set with a witness | proved, under hypotheses | Lean `launch_rank_failure`, `launch_condition_R`, `package_rank_failure` (`Shield/Zk/Launch.lean`). Hypotheses H1 to H8 are listed in `formal/lean/README.md`, section 13 |
 | a failure bound of $2^{-80}$ is out of reach of this method | proved | Lean `eps_not_lt_two_pow_neg_80`, `sz_floor` |

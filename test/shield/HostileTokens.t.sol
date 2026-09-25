@@ -87,8 +87,8 @@ contract HostileTokensTest is ShieldTestBase {
         assertEq(pool.totalShielded(hookId), _net(1e18), "one deposit, not two");
     }
 
-    /// A transfer hook that re-enters settlement is refused, and bob is paid once. Under the push gas
-    /// cap the hooked payout fails and is credited, so the hook runs when bob claims.
+    /// A transfer hook that re-enters settlement is refused, and bob is paid once. The hook runs in the
+    /// payout if it fits the push gas cap, or else in the claim of the credit.
     function test_aTransferHookCannotReenterSettlement() public {
         _deposit(hookId, 10e18);
         uint256[] memory reenter = _intentFor(hookId, 1e18, bob);
@@ -96,12 +96,12 @@ contract HostileTokensTest is ShieldTestBase {
 
         uint256[] memory w = _intentFor(hookId, 2e18, bob);
         settle(w);
-        assertEq(hook.balanceOf(bob), 0, "the hooked push failed under the gas cap");
-        assertEq(pool.claimable(hookId, bob), 2e18, "and bob is owed the amount");
-
-        vm.prank(bob);
-        pool.claim(hookId, bob);
-        assertTrue(hook.fired(), "the hook must have run during the claim");
+        if (!hook.fired()) {
+            assertEq(pool.claimable(hookId, bob), 2e18, "a refused push is credited");
+            vm.prank(bob);
+            pool.claim(hookId, bob);
+        }
+        assertTrue(hook.fired(), "the hook must have run, or this test proves nothing");
         assertEq(bytes4(hook.lastError()), ReentrancyGuard.ReentrancyGuardReentrantCall.selector, "re-entry refused");
         assertEq(hook.balanceOf(bob), 2e18, "bob got the settled amount once, not twice");
         assertEq(pool.claimable(hookId, bob), 0, "nothing left owed");

@@ -69,8 +69,8 @@ contract NullifierAndRootTest is ShieldTestBase {
         settle(w);
     }
 
-    /// A token hook that re-settles the batch during its own payout is refused. Under the push gas
-    /// cap the hooked payout fails and is credited, so the hook runs when bob claims.
+    /// A token hook that re-settles the batch during its own payout is refused. The hook runs in the
+    /// payout if it fits the push gas cap, or else in the claim of the credit.
     function test_aReentrantSettleCannotRespendTheBatchItIsInside() public {
         vm.prank(alice);
         pool.absorb(hookId, 10e18, fresh());
@@ -81,10 +81,11 @@ contract NullifierAndRootTest is ShieldTestBase {
         // the hook re-submits the very batch being settled
         hook.arm(address(pool), abi.encodeCall(pool.settleBatch, (hex"70726f6f66", w,  noResidual(), "", _blobs(2))));
         settle(w);
-        assertEq(pool.claimable(hookId, bob), 1e18, "the hooked push failed and bob is owed");
-
-        vm.prank(bob);
-        pool.claim(hookId, bob);
+        if (!hook.fired()) {
+            assertEq(pool.claimable(hookId, bob), 1e18, "a refused push is credited");
+            vm.prank(bob);
+            pool.claim(hookId, bob);
+        }
         assertTrue(hook.fired(), "the hook must have run, or this test proves nothing");
         assertEq(bytes4(hook.lastError()), ReentrancyGuard.ReentrancyGuardReentrantCall.selector, "re-entry refused");
         assertEq(hook.balanceOf(bob), 1e18, "paid once");

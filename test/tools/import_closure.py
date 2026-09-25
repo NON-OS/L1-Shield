@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Print the import closure of a Solidity file, one basename per line, space separated.
+"""Print the import closure of a Solidity file as basenames on one line, space separated.
 
-Reads the source rather than the build artifacts, so it measures what a reader would see.
+Reads the Solidity source, so it measures what a reader sees.
 Used by test/shield/DeployedSurface.t.sol to pin what the deployed verifier reaches.
 """
 import collections

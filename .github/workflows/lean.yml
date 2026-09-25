@@ -1,0 +1,108 @@
+name: lean
+
+# The proofs in formal/lean, built from clean against the pinned toolchain and Mathlib. The job
+# refuses any sorry or admit, and the main theorems may use only the three standard axioms.
+
+on:
+  pull_request:
+    paths: ['formal/lean/**', '.github/workflows/lean.yml']
+  push:
+    branches: [main]
+    paths: ['formal/lean/**', '.github/workflows/lean.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lean-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # elan-init.sh at elan v4.2.4, checked by hash before it runs.
+  ELAN_COMMIT: 227caca133724d5516bee25c2aeb3e609478f2d8
+  ELAN_INIT_SHA256: a620ff1641616222c8d37c54845492004bb84d6877cdbc944dd65c1aa685bf53
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: formal/lean
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install elan
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/elan-init.sh" \
+            "https://raw.githubusercontent.com/leanprover/elan/${ELAN_COMMIT}/elan-init.sh"
+          echo "${ELAN_INIT_SHA256}  $RUNNER_TEMP/elan-init.sh" | sha256sum -c -
+          sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      # Restore and save are separate steps, and the save holds Mathlib only. A failed save never fails the job.
+      - name: Restore Mathlib oleans
+        id: lake-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: formal/lean/.lake
+          key: lake-${{ runner.os }}-${{ hashFiles('formal/lean/lean-toolchain', 'formal/lean/lake-manifest.json') }}
+
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+
+      - name: Save Mathlib oleans
+        if: steps.lake-cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: formal/lean/.lake
+          key: ${{ steps.lake-cache.outputs.cache-primary-key }}
+
+      - name: No sorry, no admit, no new axioms
+        # Comments are stripped first, since prose may use the word admit.
+        run: |
+          python3 - Shield Axioms.lean <<'PY'
+          import pathlib, re, sys
+          def code(src):
+              out, i, depth = [], 0, 0
+              while i < len(src):
+                  if src.startswith("/-", i):
+                      depth, i = depth + 1, i + 2
+                  elif depth and src.startswith("-/", i):
+                      depth, i = depth - 1, i + 2
+                  elif depth:
+                      out.append("\n" if src[i] == "\n" else "")
+                      i += 1
+                  elif src.startswith("--", i):
+                      j = src.find("\n", i)
+                      i = len(src) if j < 0 else j
+                  else:
+                      out.append(src[i])
+                      i += 1
+              return "".join(out)
+          files = [f for a in sys.argv[1:] for f in (pathlib.Path(a).rglob("*.lean") if pathlib.Path(a).is_dir() else [pathlib.Path(a)])]
+          bad = 0
+          for f in files:
+              for n, line in enumerate(code(f.read_text()).split("\n"), 1):
+                  if re.search(r"\b(sorry|admit)\b", line) or (re.match(r"\s*axiom\s", line) and f.name != "Axioms.lean"):
+                      print(f"{f}:{n}: {line.strip()}")
+                      bad += 1
+          print(f"{len(files)} files, {bad} found")
+          sys.exit(1 if bad else 0)
+          PY
+
+      - name: Build
+        run: lake build
+
+      - name: Axioms of the main theorems
+        run: |
+          lake env lean Axioms.lean | tee axioms.txt
+          if grep -E "depends on axioms" axioms.txt \
+               | sed -E 's/.*\[(.*)\].*/\1/' | tr ',' '\n' | sed 's/ //g' \
+               | grep -vxE 'propext|Classical.choice|Quot.sound' | grep -q .; then
+            echo "unexpected axiom"; exit 1
+          fi

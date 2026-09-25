@@ -1,0 +1,268 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  FOUNDRY_VERSION: v1.5.0
+  SLITHER_VERSION: 0.11.6
+  ADERYN_VERSION: 0.6.8
+  ADERYN_SHA256: ffd6ca658962e211a3ac821c646f69c8e14bf1b1001cbfe091bcd4535a691e46
+  SEMGREP_VERSION: 1.177.0
+  GITLEAKS_VERSION: 8.30.1
+  GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+  HALMOS_VERSION: 0.3.3
+
+jobs:
+  slither:
+    name: Slither
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Restore pip
+        id: pip-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: pip-slither-${{ runner.os }}-${{ env.SLITHER_VERSION }}
+
+      - name: Install Slither
+        run: pip install "slither-analyzer==${SLITHER_VERSION}"
+
+      - name: Save pip
+        if: steps.pip-cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ steps.pip-cache.outputs.cache-primary-key }}
+
+      - name: Run Slither
+        # Findings go to code scanning for triage. Only high-severity findings fail the job.
+        run: slither . --config-file slither.config.json --sarif slither.sarif --fail-high
+
+      - name: Upload SARIF
+        if: ${{ !cancelled() && !github.event.repository.private && hashFiles('slither.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
+        with:
+          sarif_file: slither.sarif
+          category: slither
+
+  aderyn:
+    name: Aderyn
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Install Aderyn
+        run: |
+          cd "$RUNNER_TEMP"
+          curl -fsSLO "https://github.com/Cyfrin/aderyn/releases/download/aderyn-v${ADERYN_VERSION}/aderyn-x86_64-unknown-linux-gnu.tar.xz"
+          echo "${ADERYN_SHA256}  aderyn-x86_64-unknown-linux-gnu.tar.xz" | sha256sum -c -
+          tar xf aderyn-x86_64-unknown-linux-gnu.tar.xz
+          echo "$RUNNER_TEMP/aderyn-x86_64-unknown-linux-gnu" >> "$GITHUB_PATH"
+
+      - name: Run Aderyn
+        # Aderyn exits zero with findings. They go to code scanning for triage.
+        run: aderyn . --src contracts --path-includes contracts/shield,contracts/faucet --output aderyn.sarif
+
+      - name: Upload SARIF
+        if: ${{ !cancelled() && !github.event.repository.private && hashFiles('aderyn.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
+        with:
+          sarif_file: aderyn.sarif
+          category: aderyn
+
+  semgrep:
+    name: Semgrep
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Restore pip
+        id: pip-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: pip-semgrep-${{ runner.os }}-${{ env.SEMGREP_VERSION }}
+
+      - name: Install Semgrep
+        run: pip install "semgrep==${SEMGREP_VERSION}"
+
+      - name: Save pip
+        if: steps.pip-cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ steps.pip-cache.outputs.cache-primary-key }}
+
+      - name: Run Semgrep
+        # Without --error, semgrep exits zero with findings. They go to code scanning for triage.
+        run: >-
+          semgrep scan --config p/smart-contracts --metrics off
+          --sarif --output semgrep.sarif
+          contracts/shield contracts/faucet
+
+      - name: Upload SARIF
+        if: ${{ !cancelled() && !github.event.repository.private && hashFiles('semgrep.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+
+  gitleaks:
+    name: gitleaks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install gitleaks
+        run: |
+          cd "$RUNNER_TEMP"
+          curl -fsSLO "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" | sha256sum -c -
+          tar xzf "gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" gitleaks
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+
+      - name: Scan the full history
+        run: gitleaks git --redact --verbose --log-opts="--all" .
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate
+
+  codeql:
+    name: CodeQL (Python)
+    # code scanning needs the repository to be public, or GitHub Code Security on a private one
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+      packages: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: github/codeql-action/init@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
+        with:
+          languages: python
+          build-mode: none
+
+      - uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
+        with:
+          category: codeql-python
+
+  halmos:
+    name: Halmos
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      # Build only the contracts and the symbolic tests, into their own output and cache.
+      FOUNDRY_TEST: test/shield/halmos
+      FOUNDRY_OUT: out-halmos
+      FOUNDRY_CACHE_PATH: cache-halmos
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Restore pip
+        id: pip-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: pip-halmos-${{ runner.os }}-${{ env.HALMOS_VERSION }}
+
+      - name: Install Halmos
+        run: pip install "halmos==${HALMOS_VERSION}"
+
+      - name: Save pip
+        if: steps.pip-cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ steps.pip-cache.outputs.cache-primary-key }}
+
+      - name: Run Halmos
+        # The fee-router split checks exceed the per-query budget here. They run nightly without one,
+        # and the same property is proved in Lean, `split_sum` in formal/lean/Shield/Protocol/FeeRouter.lean.
+        run: halmos --forge-build-out out-halmos --match-contract '^(?!ShieldFeeRouter).*Halmos$'

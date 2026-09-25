@@ -2,9 +2,9 @@
 pragma solidity ^0.8.24;
 
 /// @title LaunchProgram
-/// @notice The program-form blob of `gen_program_air.py`, split: transition part by hash, boundary part inline.
-/// @dev Written by `script/tools/program_form_blob.py`. Transition part 14074 bytes (2802 ops, 38 outputs),
-///      boundary part 844 bytes (62 boundaries on 44 rows).
+/// @notice The launch program blob, spec/launch-program/program.bin, split: transition part by hash,
+///         boundary part inline. Transition part 14074 bytes (2802 ops, 38 outputs), boundary part
+///         844 bytes (62 boundaries on 44 rows). CI checks the generators reproduce it.
 library LaunchProgram {
     /// @notice keccak256 of the transition part the data contract must hold.
     bytes32 internal constant TAPE_HASH = 0x21dd9f3614d7159308b5fd99bf0f7b294428e807408e7876f423d8543ff2a08f;

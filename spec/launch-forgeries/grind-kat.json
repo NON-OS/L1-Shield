@@ -1,0 +1,20 @@
+{
+  "artifact": "grind-kat",
+  "label": "NONOS-STARK-FRI-EXT",
+  "head_absorbed": "keccak256(NOX-GRIND-KAT) as a digest",
+  "head": "5b292ddfee1722b8f129e081fff8a7f2d1a6e773d8cb4673a4f1aaded8845e8e",
+  "grind_bits": 28,
+  "chunks": 8,
+  "bits_per_chunk": 25,
+  "rule": "word = first 8 bytes of keccak256(0x05 || state || nonce le64), little endian; nonce = smallest with leading_zeros(word) >= bits_per_chunk; then state = keccak256(0x05 || state || nonce le64)",
+  "grinds": [
+    {"i": 0, "state_before": "5b292ddfee1722b8f129e081fff8a7f2d1a6e773d8cb4673a4f1aaded8845e8e", "nonce": 19846491, "word": "000000471f203575", "leading_zeros": 25, "state_after": "7535201f470000009852fecad12be9866718e2efcb865f9100508dc19fdaf078"},
+    {"i": 1, "state_before": "7535201f470000009852fecad12be9866718e2efcb865f9100508dc19fdaf078", "nonce": 25070119, "word": "000000532926b910", "leading_zeros": 25, "state_after": "10b9262953000000ea471601ea68c8e7876d40ef200e61ec5efbd6e136b1c118"},
+    {"i": 2, "state_before": "10b9262953000000ea471601ea68c8e7876d40ef200e61ec5efbd6e136b1c118", "nonce": 35208969, "word": "0000004978b0058a", "leading_zeros": 25, "state_after": "8a05b078490000005407c1b456eebb573957cf2430ea5a67cb1c33018aefff5e"},
+    {"i": 3, "state_before": "8a05b078490000005407c1b456eebb573957cf2430ea5a67cb1c33018aefff5e", "nonce": 524869, "word": "000000796432cb78", "leading_zeros": 25, "state_after": "78cb326479000000c9492c15b2882cc005ce0b8827764981fd3907619c8c11f0"},
+    {"i": 4, "state_before": "78cb326479000000c9492c15b2882cc005ce0b8827764981fd3907619c8c11f0", "nonce": 38704872, "word": "0000004bd5a08d88", "leading_zeros": 25, "state_after": "888da0d54b00000076ac4ae75777ee725ec9fb802dbf0d9faa434c62b2b27a03"},
+    {"i": 5, "state_before": "888da0d54b00000076ac4ae75777ee725ec9fb802dbf0d9faa434c62b2b27a03", "nonce": 34761012, "word": "000000031ba0fde4", "leading_zeros": 30, "state_after": "e4fda01b03000000c9280caae56a45a38a84fe602d1a16fa262635838fcb58f4"},
+    {"i": 6, "state_before": "e4fda01b03000000c9280caae56a45a38a84fe602d1a16fa262635838fcb58f4", "nonce": 8015004, "word": "00000045a7a58068", "leading_zeros": 25, "state_after": "6880a5a745000000e6b6c204eb9bb249e7c01e01098bb685d136b33f5a00ca39"},
+    {"i": 7, "state_before": "6880a5a745000000e6b6c204eb9bb249e7c01e01098bb685d136b33f5a00ca39", "nonce": 54499697, "word": "00000003e2f2cb4c", "leading_zeros": 30, "state_after": "4ccbf2e20300000064651a9afe99b85f69319235be973623797c460e36e3aa24"}
+  ]
+}

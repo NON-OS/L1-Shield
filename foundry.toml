@@ -1,0 +1,47 @@
+[profile.default]
+src = "contracts"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+solc = "0.8.24"
+optimizer = true
+optimizer_runs = 200
+evm_version = "paris"
+# DeployedSurface.t.sol runs test/tools/import_closure.py to compute the import closure of the
+# deployed contracts from source and fails if an undeclared contract reaches it. That is the only
+# use of ffi.
+ffi = true
+# Verifying a real proof in a test runs well past the default block gas limit and memory cap.
+gas_limit = 90000000000
+memory_limit = 536870912
+fs_permissions = [{ access = "read", path = "./" }]
+remappings = [
+    "forge-std/=lib/forge-std/src/",
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "halmos-cheatcodes/=lib/halmos-cheatcodes/src/"
+]
+
+[profile.default.invariant]
+runs = 512
+depth = 200
+fail_on_revert = false
+call_override = false
+shrink_run_limit = 5000
+
+# A longer campaign for release candidates: forge test --profile deep
+[profile.deep.invariant]
+runs = 2000
+depth = 500
+fail_on_revert = false
+shrink_run_limit = 20000
+
+[rpc_endpoints]
+sepolia = "${SEPOLIA_RPC_URL}"
+
+[fmt]
+line_length = 120
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
+quote_style = "double"

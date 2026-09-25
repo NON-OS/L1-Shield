@@ -23,6 +23,7 @@ contract NoxShieldStaking is INoxShieldStaking, Ownable2Step, ReentrancyGuard {
 
     uint256 public constant PRECISION = 1e27; // accumulator scale
     uint256 public constant MAX_COOLDOWN = 30 days;
+    address public constant BURN_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 
     IERC20 public immutable nox;
     uint256 public immutable cooldown; // seconds
@@ -30,7 +31,7 @@ contract NoxShieldStaking is INoxShieldStaking, Ownable2Step, ReentrancyGuard {
     address public rewardNotifier;
     uint256 public totalStaked; // excludes balances in cooldown
     uint256 public rewardPerTokenStored;
-    uint256 public carriedRewards; // undistributed remainder and rewards sent while nothing was staked
+    uint256 public carriedRewards; // the rounding remainder, carried to the next notification
 
     mapping(address account => uint256 amount) public stakedOf;
     mapping(address account => uint256 value) public userRewardPerTokenPaid;
@@ -44,6 +45,7 @@ contract NoxShieldStaking is INoxShieldStaking, Ownable2Step, ReentrancyGuard {
     event RewardPaid(address indexed account, uint256 amount);
     event RewardNotified(uint256 amount, uint256 distributed, uint256 carried);
     event RewardNotifierSet(address indexed notifier);
+    event RewardBurned(uint256 amount);
 
     error ZeroAddress();
     error ZeroAmount();
@@ -135,7 +137,8 @@ contract NoxShieldStaking is INoxShieldStaking, Ownable2Step, ReentrancyGuard {
     }
 
     /// @inheritdoc INoxShieldStaking
-    /// @dev The floor-division remainder carries forward, and so does everything while nothing is staked.
+    /// @dev With nothing staked no one earned the reward, so it is burned. Otherwise the booked share
+    ///      rounds up, so stakers are never owed more than was booked, and the remainder carries.
     function notifyRewardAmount(uint256 amount) external nonReentrant {
         if (msg.sender != rewardNotifier) revert NotNotifier();
         if (amount == 0) revert ZeroAmount();
@@ -147,12 +150,14 @@ contract NoxShieldStaking is INoxShieldStaking, Ownable2Step, ReentrancyGuard {
         uint256 total = received + carriedRewards;
         uint256 distributed;
         if (totalStaked == 0) {
-            carriedRewards = total;
+            carriedRewards = 0;
+            nox.safeTransfer(BURN_ADDRESS, total);
+            emit RewardBurned(total);
         } else {
             uint256 increment = (total * PRECISION) / totalStaked;
             rewardPerTokenStored += increment;
-            distributed = (increment * totalStaked) / PRECISION;
-            // Cannot underflow: both divisions round down, so distributed <= total.
+            distributed = (increment * totalStaked + PRECISION - 1) / PRECISION;
+            // Cannot underflow: increment * totalStaked <= total * PRECISION, so distributed <= total.
             unchecked {
                 carriedRewards = total - distributed;
             }

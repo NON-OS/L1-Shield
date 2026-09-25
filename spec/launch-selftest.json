@@ -1,0 +1,22 @@
+{
+  "hash2": {
+    "left": "0x0000000000000000000000000000000000000000000000000000000000000001",
+    "right": "0x0000000000000000000000000000000000000000000000000000000000000002",
+    "expected": "0x1ef74ff96c898565a918cd97625e1b7da87bf226bcca2b1507292b79b44cecc2"
+  },
+  "hashFields": {
+    "input": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": "0x4a341a76cc98c1c3a77143bc449b22ea5e075a65b514b1891e1a0374c79664ad"
+  },
+  "noteVector": {
+    "value": 1000,
+    "assetId": 0,
+    "ownerCommit": "0x94d55b34707f286d34d832be375e1d8974afcf049f038ca56258b69a86dd903e",
+    "commitment": "0x281060b5f54dddb77a934b725461e6d6c5eebaf304b0014fc63a34e7ab498196"
+  }
+}

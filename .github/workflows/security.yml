@@ -263,8 +263,8 @@ jobs:
           key: ${{ steps.pip-cache.outputs.cache-primary-key }}
 
       - name: Run Halmos
-        # Checks that exceed the per-query budget here run nightly without one: the fee-router split, also
-        # proved in Lean as `split_sum`, the faucet bound check and two staking checks.
+        # Checks whose solver time varies past the per-query budget run nightly without one: the
+        # fee-router split, also proved in Lean as `split_sum`, the faucet suite and two staking checks.
         run: >-
-          halmos --forge-build-out out-halmos --match-contract '^(?!ShieldFeeRouter).*Halmos$'
-          --match-test '^check_(?!oneClaimRespectsEveryBound|aNotificationConservesItsAmount|cannotUnstakeMoreThanStaked)'
+          halmos --forge-build-out out-halmos --match-contract '^(?!ShieldFeeRouter|NOXFaucet).*Halmos$'
+          --match-test '^check_(?!aNotificationConservesItsAmount|cannotUnstakeMoreThanStaked)'

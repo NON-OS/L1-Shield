@@ -1,0 +1,16 @@
+{
+  "outer_n_queries": 12,
+  "log_domain": 29,
+  "log_trace_len": 18,
+  "trace_width": 41,
+  "n_coeffs": 760,
+  "grind_bits": 32,
+  "coset_shift": 7,
+  "region_width": 37,
+  "constraint_degree": 8,
+  "extra_blowup_bits": 7,
+  "inner_n_queries": 32,
+  "inner_extra_blowup_bits": 3,
+  "inner_soundness_bits": 144,
+  "permutation_challenges": "transcript"
+}

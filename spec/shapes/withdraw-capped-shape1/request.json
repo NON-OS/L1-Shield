@@ -1,0 +1,16 @@
+{
+  "asset_id": 0,
+  "pool_leaves": ["0xdc1c9cf0b7cca44ea9e4cff085d3db5206412fdad48e1eb6cbde87191ccfe1f3", "0x1d88c9cadfdcd9ec9011f3736ba54d9399dc0178f3d1e3ca4bb47645cb318157"],
+  "assoc_leaves": ["0xdc1c9cf0b7cca44ea9e4cff085d3db5206412fdad48e1eb6cbde87191ccfe1f3", "0x1d88c9cadfdcd9ec9011f3736ba54d9399dc0178f3d1e3ca4bb47645cb318157"],
+  "input_pool_index": [0, 1],
+  "input_assoc_index": [0, 1],
+  "note_root": "0xd43d83b6a753d85a829f5906b735a261ecb56d714ae8f98f8b8535c360e6fab7",
+  "assoc_root": "0xd43d83b6a753d85a829f5906b735a261ecb56d714ae8f98f8b8535c360e6fab7",
+  "recipient": "0x8ba1f109551bd432803012645ac136ddd64dba72",
+  "fee_recipient": "0x5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+  "clearing_price": 1000000,
+  "public_amount": 2000000000000000,
+  "fee": 10000000000000,
+  "output_values": [1990000000000000, 0],
+  "output_spend_pk": ["self", "self"]
+}

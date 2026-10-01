@@ -1,0 +1,8 @@
+{
+  "outer_n_periodic": 119,
+  "n_chal": 2,
+  "digest_bytes": 24,
+  "final_layer_coefficients": true,
+  "fri_radix": 4,
+  "outer_periodic_root_keccak_at_deployment_rate": "0x6ad8da2718d96ed38fccc24454eccb90a858e655b671a7460000000000000000"
+}

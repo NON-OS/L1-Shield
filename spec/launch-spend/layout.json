@@ -1,0 +1,18 @@
+{
+  "outer_n_periodic": 93,
+  "n_chal": 2,
+  "digest_bytes": 24,
+  "final_layer_coefficients": true,
+  "fri_radix": 4,
+  "fri_final_log": 9,
+  "format5": true,
+  "outer_periodic_root_keccak_at_deployment_rate": "0xbb7614937ae6d7e5e26e88610fae8ff9e5195fef4721fdbd0000000000000000",
+  "ext_challenges": true,
+  "coeff_rule": "powers",
+  "deep_rule": "powers",
+  "round_grind_bits": 20,
+  "final_grind": {
+    "searches": 8,
+    "bits": 25
+  }
+}

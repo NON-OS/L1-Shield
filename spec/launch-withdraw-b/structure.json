@@ -1,0 +1,16 @@
+{
+  "outer_n_queries": 19,
+  "log_domain": 23,
+  "log_trace_len": 13,
+  "trace_width": 44,
+  "n_coeffs": 100,
+  "grind_bits": 28,
+  "coset_shift": 7,
+  "region_width": 34,
+  "constraint_degree": 11,
+  "extra_blowup_bits": 5,
+  "inner_n_queries": 0,
+  "inner_extra_blowup_bits": 0,
+  "params_id": "e5a79cfc1358a4c00a268a3796b214b0ad0866528ce0914159f8dbfad557589d",
+  "frame": "per window row k (z_k = z, g z), one F_p^2 value per column; the mask pair 42 and 43 is opened as one F_p^2 value: slot 42 carries M_42(z_k) + X M_43(z_k), with X^2 = 7, and slot 43 carries zero, which the verifier requires. DEEP gives column 43 the coefficient X times column 42's"
+}

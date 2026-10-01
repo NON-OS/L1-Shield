@@ -1,0 +1,76 @@
+{
+  "artifacts": [
+    {
+      "path": "emit_compose_strip/compose-strip.json",
+      "emitter": "emit_compose_strip",
+      "bytes": 3445,
+      "sha256": "ae0bb5e83c0b52878e9131739e64aa3dd022b0d33af9aad1096ebed9775bcb21"
+    },
+    {
+      "path": "emit_inner_boundary/inner-layout.json",
+      "emitter": "emit_inner_boundary",
+      "bytes": 2575,
+      "sha256": "e2438a5dc245ec76c8b17da5811021fedc0881ecc7cf086b4c787cdbd0672f34"
+    },
+    {
+      "path": "emit_outer_boundary/outer-boundary.json",
+      "emitter": "emit_outer_boundary",
+      "bytes": 39265,
+      "sha256": "ceb0b4ea39898a7053a15402a41a4484270a0da069cf901dad2442861e719cb7"
+    },
+    {
+      "path": "emit_real_structure/.rootcache/4adad81772c3eacf934326f63b6ae7548cf8df3b25c4c4a0230255c45ca7d10b.root",
+      "emitter": "emit_real_structure",
+      "bytes": 65,
+      "sha256": "ff9b593984b3b7d937a29923741e7e1f59aa48074b24ef19e61e32f8e6a8b9ca"
+    },
+    {
+      "path": "emit_real_structure/real-structure-layout.json",
+      "emitter": "emit_real_structure",
+      "bytes": 6915,
+      "sha256": "b73e2bacbd01e9d28f700dd719eb68db5cd839c780ab537e5153d7d20abab710"
+    },
+    {
+      "path": "emit_real_structure/real-structure.json",
+      "emitter": "emit_real_structure",
+      "bytes": 1846,
+      "sha256": "63863de4e98dc64f4629d4bc6ff5b441f372cad127c3ce8624a30518e2fb3220"
+    },
+    {
+      "path": "emit_recursion_pre/.treecache/e11b81bd4a00acf2043b7f5d32a486a45543214b3030292252e493c02cbaf65b.tree",
+      "emitter": "emit_recursion_pre",
+      "bytes": 2147483840,
+      "sha256": "55a7490dabb0378ef553218db409a09f21c966f1e13a1c980581db6227b61949"
+    },
+    {
+      "path": "emit_recursion_pre/settlement-pre.proof",
+      "emitter": "emit_recursion_pre",
+      "bytes": 517764,
+      "sha256": "b27509a64068e955238892f88bc6a224fa86c3837981af6169663a73906618e8"
+    },
+    {
+      "path": "emit_recursion_pre/settlement-pre.proof.publics.json",
+      "emitter": "emit_recursion_pre",
+      "bytes": 618,
+      "sha256": "eccb363349de71fbeb150d3b83128ce8e57fe45f0c7dc9d84fe8f0c3322e062d"
+    },
+    {
+      "path": "emit_transfer/transfer.proof",
+      "emitter": "emit_transfer",
+      "bytes": 239676,
+      "sha256": "e48533eee44ce9958389a6f35fa67f3cbc1b71b70310a3a735b67373f77d4bc8"
+    },
+    {
+      "path": "emit_wiring/settlement-wiring-classes.txt",
+      "emitter": "emit_wiring",
+      "bytes": 397419,
+      "sha256": "29f881a92383da62fe887c32d511d03a0b01e6082039cfeaf20f787cc49c1925"
+    },
+    {
+      "path": "emit_wiring/settlement-wiring.json",
+      "emitter": "emit_wiring",
+      "bytes": 614,
+      "sha256": "5aadb4ba71bc3e618ce2030c6ff48d3d1f0ed7977fb083fa9f760cdb5f45e9af"
+    }
+  ]
+}

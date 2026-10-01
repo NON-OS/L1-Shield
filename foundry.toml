@@ -25,6 +25,12 @@ remappings = [
     "halmos-cheatcodes/=lib/halmos-cheatcodes/src/"
 ]
 
+# Halmos reads one artifact per contract, so its build skips the second compiler profile. Its checks
+# do not depend on the pool's deployed code size.
+[profile.halmos]
+additional_compiler_profiles = []
+compilation_restrictions = []
+
 [profile.default.invariant]
 runs = 512
 depth = 200

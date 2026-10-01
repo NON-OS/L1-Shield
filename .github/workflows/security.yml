@@ -227,6 +227,7 @@ jobs:
     timeout-minutes: 45
     env:
       # Build only the contracts and the symbolic tests, into their own output and cache.
+      FOUNDRY_PROFILE: halmos
       FOUNDRY_TEST: test/shield/halmos
       FOUNDRY_OUT: out-halmos
       FOUNDRY_CACHE_PATH: cache-halmos

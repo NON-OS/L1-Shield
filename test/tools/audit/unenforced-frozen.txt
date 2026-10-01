@@ -2,5 +2,5 @@
 # Removing the declaration would change the source the deployed bytecode was verified from,
 # so these stay as they are and the generator no longer emits them for new circuits.
 # Format: <error name> <path prefix of every declaring file>  (one per line)
-ShapeNotAccepted  contracts/shield/verifier/shapes/
-SharedPathRefused contracts/shield/verifier/shapes/
+ShapeNotAccepted  contracts/shield/verifier/
+SharedPathRefused contracts/shield/verifier/

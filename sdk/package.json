@@ -1,0 +1,24 @@
+{
+  "name": "@nonos/shield",
+  "version": "0.1.0",
+  "description": "NOX Shield client: fees, statements, packages, publishing through Tor, and landing status",
+  "type": "module",
+  "main": "src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/",
+    "test:live": "NOX_LIVE=1 node --test test/"
+  },
+  "dependencies": {
+    "@libp2p/websockets": "*",
+    "@waku/sdk": "0.0.36",
+    "socks-proxy-agent": "^10.1.0",
+    "@multiformats/multiaddr": "^12.5.1"
+  },
+  "license": "MIT"
+}

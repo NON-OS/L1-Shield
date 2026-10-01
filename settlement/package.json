@@ -1,0 +1,11 @@
+{
+  "name": "nox-shield-settlement",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NOX Shield open settlement: the proof package, publishing through Tor, and a lander's listener",
+  "license": "MIT",
+  "dependencies": {
+    "@waku/sdk": "^0.0.36",
+    "socks-proxy-agent": "^10.1.0"
+  }
+}

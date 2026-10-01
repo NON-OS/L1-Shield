@@ -1,0 +1,14 @@
+name = "Shield"
+defaultTargets = ["Shield"]
+
+[leanOptions]
+autoImplicit = false
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.34.0"
+
+[[lean_lib]]
+name = "Shield"
+globs = ["Shield.+"]

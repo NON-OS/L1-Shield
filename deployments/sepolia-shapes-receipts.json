@@ -1,0 +1,242 @@
+[
+ {
+  "block": 11786912,
+  "tx": "0x19a72c3d01dc6b6dece374f5fe74a3f535d44269902140c22defac917b7e1032",
+  "gasUsed": 5367035,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "",
+  "function": null,
+  "address": "0x420485eec0a3ef8078e2608f768f1d57e4f319d3"
+ },
+ {
+  "block": 11786914,
+  "tx": "0xb3c699598bdd6351443d5e8289162cdf2b4267edf3e22107b772b657b80c37bb",
+  "gasUsed": 5409599,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "",
+  "function": null,
+  "address": "0xcddb80f4c405127ec04a0f860269b3379bfd2753"
+ },
+ {
+  "block": 11786915,
+  "tx": "0xf0e73cc2a6e7359122a70247fd8ab835548cffac07179748a14a23c795536eb0",
+  "gasUsed": 5302008,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "",
+  "function": null,
+  "address": "0x36c38813149231ba1ab1e29777a167f4715991b1"
+ },
+ {
+  "block": 11786916,
+  "tx": "0xc385632520022afee6c6ea21378b306f0a42fefea809353b65a06f61c30a4e08",
+  "gasUsed": 4930284,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "ShapesStraightEvaluatorAt",
+  "function": null,
+  "address": "0x8f9efa664cb76afca63e92639f3706a5dfa46975"
+ },
+ {
+  "block": 11786918,
+  "tx": "0x5253a7ec2becdf9daea294472937433d50d64a779fc9eab384f454a3c1aa513f",
+  "gasUsed": 3482257,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "PrepareShapes_A",
+  "function": null,
+  "address": "0x345ba9bd573c86f6aef27b9bfabc4109d11e4c17"
+ },
+ {
+  "block": 11786919,
+  "tx": "0x0d086cc50e12dd39ce505590d76b9d8761d5c242eed264fa3f0822c0e3a447a0",
+  "gasUsed": 3482257,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "PrepareShapes_Ap",
+  "function": null,
+  "address": "0xe6e41d2eba77450af489933438586d71c8637f28"
+ },
+ {
+  "block": 11786921,
+  "tx": "0x0415748e1c4637c5961df04863dd02bc5c5d793897820cf13f3b4ce49f08d2c7",
+  "gasUsed": 3482269,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "PrepareShapes_B",
+  "function": null,
+  "address": "0x19f3b963f861232aef86558e81059f0f7bd85b0f"
+ },
+ {
+  "block": 11786922,
+  "tx": "0x5f52c217637d0fb5258f6b318136a2778a23f37165486f541771286d51634afa",
+  "gasUsed": 4638921,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "WalkShapes_A",
+  "function": null,
+  "address": "0xd9f7bcc49bfdab364324c6e9f769ed0484eb78a6"
+ },
+ {
+  "block": 11786924,
+  "tx": "0xc5b2a565790610787a4933bd1c1312bf9e3fab336fce5c30e7270bc220d386a4",
+  "gasUsed": 4586681,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "WalkShapes_Ap",
+  "function": null,
+  "address": "0xcf41ea6702f9c2af1cedfe8a0cb6ae4cb14ba756"
+ },
+ {
+  "block": 11786925,
+  "tx": "0xa9c0a26968ea30b9edda924952fa20d621d7b6f7e0215c440f0e886f61ed9157",
+  "gasUsed": 4553390,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "WalkShapes_B",
+  "function": null,
+  "address": "0x1e237dc5ecaa03c88a447a6384ae88149a701841"
+ },
+ {
+  "block": 11786926,
+  "tx": "0xdf62331aaba01cd2067849010b02a590ddc26e228b0671b512ed03fc933bc34b",
+  "gasUsed": 2139577,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "ComposedStarkVerifierShapes",
+  "function": null,
+  "address": "0xde6110142b39730f480f9d66c408f150a7e823c1"
+ },
+ {
+  "block": 11786928,
+  "tx": "0x9832e530948db1646544a32b7a99d001bf41e5b44f6f381191d7798879e77ae3",
+  "gasUsed": 3757270,
+  "status": 1,
+  "kind": "CALL",
+  "contract": "ComposedStarkVerifierShapes",
+  "function": "attest(bytes,uint256[])",
+  "address": "0xde6110142b39730f480f9d66c408f150a7e823c1"
+ },
+ {
+  "block": 11786929,
+  "tx": "0xf7e9c04008008bbea2bfbd1de41963028d54353c2e432fd875ea5b8b27ea63a7",
+  "gasUsed": 4221816,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "",
+  "function": null,
+  "address": "0x87d55a0257af7e495f288db340cdd169cd1d544e"
+ },
+ {
+  "block": 11786930,
+  "tx": "0x4e4dac5b5606ddd6c3e8053728c8560553b37fbcad2f03b452e40decd0724a1d",
+  "gasUsed": 219210,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "AssociationSetRegistry",
+  "function": null,
+  "address": "0xf6b5c3470eb7f1bde3412e72eff4235a4536a206"
+ },
+ {
+  "block": 11786932,
+  "tx": "0xcabd57e8b35b8b8e159edc884994cda125178d9b3811aa450c697d11bea275d0",
+  "gasUsed": 9688724,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "ShieldedPool",
+  "function": null,
+  "address": "0xd0dbce195c082da39a218c62c01a732ce5b4d541"
+ },
+ {
+  "block": 11786933,
+  "tx": "0x6bff5007c538d73efc2c353cc84c6c4d96308cf83acf618391e153a3ebd5e115",
+  "gasUsed": 102186,
+  "status": 1,
+  "kind": "CALL",
+  "contract": "ShieldedPool",
+  "function": "registerAsset(address,uint256)",
+  "address": "0xd0dbce195c082da39a218c62c01a732ce5b4d541"
+ },
+ {
+  "block": 11786934,
+  "tx": "0xa1de6d7df89355d8bc5bfbb4a44a511025fa8bf396ff35a67ed0184d30fd73bd",
+  "gasUsed": 89666,
+  "status": 1,
+  "kind": "CALL",
+  "contract": "AmountPolicy",
+  "function": "initRanges(uint64[],uint8[],uint8[],uint256[])",
+  "address": "0xf4a8e6e39e08a93c635a1db8be4ecf1f6541444e"
+ },
+ {
+  "block": 11786935,
+  "tx": "0x6259f8584f9e40930e4308e82f9ebfc9332fd838311f6fff539f59c5a5ccb2f2",
+  "gasUsed": 48149,
+  "status": 1,
+  "kind": "CALL",
+  "contract": "AmountPolicy",
+  "function": "setGuardian(address)",
+  "address": "0xf4a8e6e39e08a93c635a1db8be4ecf1f6541444e"
+ },
+ {
+  "block": 11786936,
+  "tx": "0xebdf9d92fd29960fced3dd94bab3427bfb53cecd52fa59139e455376c5b76ea1",
+  "gasUsed": 31798,
+  "status": 1,
+  "kind": "CALL",
+  "contract": "ShieldedPool",
+  "function": "setOpenDeposits(bool)",
+  "address": "0xd0dbce195c082da39a218c62c01a732ce5b4d541"
+ },
+ {
+  "block": 11786937,
+  "tx": "0x547ffbab0fc0afbf75b8153ebddd4c75b67f42ceeb3080600ee4344354ffb037",
+  "gasUsed": 32508,
+  "status": 1,
+  "kind": "CALL",
+  "contract": "ShieldedPool",
+  "function": "endBetaMode()",
+  "address": "0xd0dbce195c082da39a218c62c01a732ce5b4d541"
+ },
+ {
+  "block": 11786938,
+  "tx": "0x92431d797adbea045fd5b095d79cad8cbf05531cf9fcd18f893078ffd1763cfc",
+  "gasUsed": 1248206,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "RelayerRegistry",
+  "function": null,
+  "address": "0x4925f9771d0ca1f89bd45100ab92a398857c8d0d"
+ },
+ {
+  "block": 11786940,
+  "tx": "0x373e6770f56f510d65de86b9b0d9a567cb252e853eb6d2941e3733fc5768471d",
+  "gasUsed": 366848,
+  "status": 1,
+  "kind": "CREATE",
+  "contract": "RootBounty",
+  "function": null,
+  "address": "0x0ef6c71a9542ce086d598d946c5c27ad6fecff90"
+ },
+ {
+  "block": 11786941,
+  "tx": "0x1e1323104391034476f745155eca578c2ff1aa1e028398e468cf9ce4f97218f2",
+  "gasUsed": 49627,
+  "status": 1,
+  "kind": "CALL",
+  "contract": "ShieldedPool",
+  "function": "transferOwnership(address)",
+  "address": "0xd0dbce195c082da39a218c62c01a732ce5b4d541"
+ },
+ {
+  "block": 11786942,
+  "tx": "0x91befcf5e75483d053f8598f4379bda067d6c0eb5eb3b37e37c5ec38d7d09b05",
+  "gasUsed": 48404,
+  "status": 1,
+  "kind": "CALL",
+  "contract": "AmountPolicy",
+  "function": "transferOwnership(address)",
+  "address": "0xf4a8e6e39e08a93c635a1db8be4ecf1f6541444e"
+ }
+]

@@ -1,0 +1,194 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  FOUNDRY_VERSION: v1.5.0
+
+jobs:
+  forge:
+    name: Build, sizes, generators and tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+          cache: true
+
+      - name: Restore compiler output
+        id: forge-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            cache
+            out
+          key: forge-${{ runner.os }}-${{ env.FOUNDRY_VERSION }}-${{ hashFiles('foundry.toml', 'contracts/**/*.sol', 'test/**/*.sol', 'script/**/*.sol', '.gitmodules') }}
+          restore-keys: |
+            forge-${{ runner.os }}-${{ env.FOUNDRY_VERSION }}-
+
+      - name: forge build
+        run: forge build
+
+      - name: Save compiler output
+        if: steps.forge-cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            cache
+            out
+          key: ${{ steps.forge-cache.outputs.cache-primary-key }}
+
+      - name: Contract sizes
+        # forge exits non-zero when any artifact exceeds EIP-170, test harnesses included.
+        # The gate applies the limits to the contracts that are deployed.
+        env:
+          DEPLOYED: >-
+            RealSplitVerifier LaunchEvaluator ComposedStarkVerifier ShieldedPool
+            PoseidonGoldilocks AssociationSetRegistry NoxShieldStaking ShieldFeeRouter NOXFaucet
+        run: |
+          set +e
+          forge build --sizes --json > "$RUNNER_TEMP/sizes.json"
+          echo "forge build --sizes exit code: $?"
+          set -e
+          python3 - "$RUNNER_TEMP/sizes.json" <<'PY'
+          import json, os, sys
+          sizes = json.load(open(sys.argv[1]))
+          RUNTIME, INIT = 24576, 49152
+          bad = 0
+          print(f"{'contract':<28} {'runtime':>8} {'initcode':>9}")
+          for name in os.environ["DEPLOYED"].split():
+              if name not in sizes:
+                  print(f"{name:<28} missing from the build output")
+                  bad += 1
+                  continue
+              rt, ini = sizes[name]["runtime_size"], sizes[name]["init_size"]
+              flag = "" if rt <= RUNTIME and ini <= INIT else "  OVER LIMIT"
+              bad += bool(flag)
+              print(f"{name:<28} {rt:>8} {ini:>9}{flag}")
+          sys.exit(1 if bad else 0)
+          PY
+
+      - name: Generators reproduce spec/launch-program
+        # program.bin, tape.bin and the slot map come out of the tools byte for byte.
+        run: |
+          gen="$RUNNER_TEMP/launch"
+          python3 script/tools/gen_program_air.py --tape spec/launch-program/transition-tape.json \
+            --oracle spec/launch-honest/oracle.json --out-dir "$gen"
+          cmp "$gen/program.bin" spec/launch-program/program.bin
+          python3 script/tools/program_form_blob.py "$gen/program.bin"
+          cmp "$gen/tape.bin" spec/launch-program/tape.bin
+          python3 - "$gen/slots.bin" contracts/shield/verifier/LaunchProgram.sol <<'PY'
+          import re, sys
+          src = open(sys.argv[2]).read()
+          lib = src[src.index("library LaunchSlots"):]
+          at = lib.index("constant SLOTS =")
+          pinned = bytes.fromhex("".join(re.findall(r'hex"([0-9a-f]*)"', lib[at:lib.index(";", at)])))
+          if open(sys.argv[1], "rb").read() != pinned:
+              sys.exit("slots.bin is not LaunchSlots.SLOTS")
+          print(f"slot map, {len(pinned)} bytes, matches LaunchSlots.SLOTS")
+          PY
+
+      - name: forge test
+        run: forge test
+
+  lint-and-audit:
+    name: Audits
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Audit, declared but unenforced
+        run: bash test/tools/audit/declared-but-unenforced.sh
+
+      - name: Audit, one home per quantity
+        run: bash test/tools/audit/one-home-per-quantity.sh
+
+  mermaid:
+    name: Mermaid render
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      MERMAID_CLI_VERSION: 11.17.0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+
+      - name: Restore npm and browser
+        id: mmdc-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.npm
+            ~/.cache/puppeteer
+          key: mermaid-cli-${{ runner.os }}-${{ env.MERMAID_CLI_VERSION }}
+
+      - name: Install mermaid-cli
+        run: |
+          mkdir -p "$RUNNER_TEMP/mmdc"
+          npm install --prefix "$RUNNER_TEMP/mmdc" --no-audit --no-fund \
+            "@mermaid-js/mermaid-cli@${MERMAID_CLI_VERSION}"
+          # The runner restricts unprivileged user namespaces, so Chromium runs without its sandbox.
+          echo '{"args":["--no-sandbox"]}' > "$RUNNER_TEMP/puppeteer.json"
+
+      - name: Save npm and browser
+        if: steps.mmdc-cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.npm
+            ~/.cache/puppeteer
+          key: ${{ steps.mmdc-cache.outputs.cache-primary-key }}
+
+      - name: Render every mermaid block
+        run: |
+          mmdc="$RUNNER_TEMP/mmdc/node_modules/.bin/mmdc"
+          out="$RUNNER_TEMP/mermaid-out"
+          mkdir -p "$out"
+          fail=0
+          blocks=0
+          for f in README.md docs/*.md; do
+            [ -f "$f" ] || continue
+            n=$(grep -c '^```mermaid' "$f") || continue
+            blocks=$((blocks + n))
+            base=$(echo "$f" | tr / _)
+            if "$mmdc" -q -p "$RUNNER_TEMP/puppeteer.json" -i "$f" -o "$out/$base"; then
+              echo "ok   $f ($n blocks)"
+            else
+              echo "::error file=$f::a mermaid block failed to render"
+              fail=1
+            fi
+          done
+          rendered=$(find "$out" -name '*.svg' | wc -l)
+          echo "$blocks blocks, $rendered rendered"
+          if [ "$fail" -ne 0 ] || [ "$rendered" -ne "$blocks" ]; then
+            exit 1
+          fi

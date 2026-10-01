@@ -1,0 +1,9 @@
+[
+ {
+  "id": "c97d64983eab13dd5a02504d36b6ceef0165df710b4561949f72ab85f8fa2142",
+  "check": "arbitrary-send-eth",
+  "impact": "High",
+  "confidence": "Medium",
+  "description": "RootBounty.commit() (contracts/shield/RootBounty.sol#46-56) sends eth to arbitrary user\n\tDangerous calls:\n\t- (ok,None) = msg.sender.call{value: paid}() (contracts/shield/RootBounty.sol#54)\n"
+ }
+]

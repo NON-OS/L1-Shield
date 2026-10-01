@@ -6,16 +6,13 @@ pragma solidity ^0.8.24;
 /// @dev Words 0..5 are 4-limb digests, low limb first, and words 6..9 one limb each. At 12 words,
 ///      the launch intent, each address word fits 160 bits and splits into 48 + 48 + 48 + 16 bits,
 ///      so an address has one encoding. At 11 words, word 10 splits into four 64-bit limbs. At 13
-///      words, word 12 is the not-before time, one limb, so an intent is 37 limbs. At 14 words, the
-///      claim, words 12 and 13 are the value sums V_lo and V_hi, one limb each: 38 limbs. The claim
-///      contract checks each is below 2^33; this library only maps.
+///      words, word 12 is the not-before time, one limb, so an intent is 37 limbs.
 library PublicWords {
     uint256 internal constant P = 0xFFFFFFFF00000001;
     uint256 internal constant LIMB = 0xFFFFFFFFFFFFFFFF;
     uint256 internal constant INTENT_WORDS = 11;
     uint256 internal constant INTENT_WORDS_FEE_RECIPIENT = 12;
     uint256 internal constant INTENT_WORDS_NOT_BEFORE = 13;
-    uint256 internal constant CLAIM_WORDS = 14;
     uint256 internal constant LIMBS_PER_INTENT = 32;
     uint256 internal constant ADDRESS_LIMB = 0xFFFFFFFFFFFF; // 2^48 - 1
 
@@ -27,7 +24,6 @@ library PublicWords {
         if (perIntent == INTENT_WORDS) return 32; // four per digest or address word, one per scalar word
         if (perIntent == INTENT_WORDS_FEE_RECIPIENT) return 36;
         if (perIntent == INTENT_WORDS_NOT_BEFORE) return 37;
-        if (perIntent == CLAIM_WORDS) return 38;
         revert BadIntentWidth(perIntent);
     }
 
@@ -37,7 +33,7 @@ library PublicWords {
     }
 
     /// @notice Expands N x perIntent public words into N x limbs(perIntent) limbs. Reverts on a
-    ///         width other than 11 to 14, a partial batch, or any limb >= p.
+    ///         width other than 11, 12 or 13, a partial batch, or any limb >= p.
     function publicsOf(uint256[] calldata publicInputs, uint256 perIntent)
         internal
         pure

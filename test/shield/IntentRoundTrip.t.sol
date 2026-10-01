@@ -39,16 +39,15 @@ contract IntentRoundTripTest is Test {
         console2.log("32 of 32 limbs round-trip");
     }
 
-    /// The four widths and their limb counts. Anything else is refused.
+    /// The three widths and their limb counts. Anything else is refused.
     function test_limbsPerIntentForEachWidth() public {
         assertEq(this.limbsOf(11), 32);
         assertEq(this.limbsOf(12), 36);
         assertEq(this.limbsOf(13), 37);
-        assertEq(this.limbsOf(14), 38);
         vm.expectRevert(abi.encodeWithSelector(PublicWords.BadIntentWidth.selector, 10));
         this.limbsOf(10);
-        vm.expectRevert(abi.encodeWithSelector(PublicWords.BadIntentWidth.selector, 15));
-        this.limbsOf(15);
+        vm.expectRevert(abi.encodeWithSelector(PublicWords.BadIntentWidth.selector, 14));
+        this.limbsOf(14);
     }
 
     /// The first 11 words expand to the same 32 limbs at either width.

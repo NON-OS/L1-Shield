@@ -126,9 +126,9 @@ contract PublicWordsHalmos is SymTest, Test {
         }
     }
 
-    /// Any width other than 11 or 12 is refused.
+    /// Any width other than 11, 12 or 13 is refused.
     function check_anyOtherWidthIsRefused(uint8 perIntent) public view {
-        vm.assume(perIntent != 11 && perIntent != 12);
+        vm.assume(perIntent != 11 && perIntent != 12 && perIntent != 13);
         _refused(new uint256[](24), perIntent);
     }
 }
